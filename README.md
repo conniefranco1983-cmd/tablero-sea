@@ -1,90 +1,145 @@
 # Tablero SEA
 
-Aplicación web para el **Tablero de Captura del Informe Trimestral sobre la situación de los Sistemas Estatales Anticorrupción**.
+App web para capturar el **Informe Trimestral sobre la situación de los Sistemas Estatales
+Anticorrupción**. 
 
-Nombre corto: **Tablero SEA**.
+Cada entidad federativa entra, llena su informe por bloques (A…L) y lo
+envía; admins pueden ver avance de las 32, calificaciones y administran los periodos.
 
-Desarrollador: **Secretaría Ejecutiva del Sistema Nacional Anticorrupción**.
+## Stack
 
-## Stack tecnológico
+- **React 19 + TypeScript** front.
+- **Vite** bundler / servidor de desarrollo.
+- **Tailwind CSS 3**
+- **React Router v7** para navegación.
+- **TanStack Query (React Query)** para el estado de servidor (caché, loading/error, invalidación).
+- **Supabase** (Postgres + RLS) backend.
+- **Auth0** para el login, conectado a Supabase vía Third-Party Auth.
+- **Lucide** íconos.
 
-- **React 19 + TypeScript**: frontend framework
-- **Vite**: bundler y servidor de desarrollo
-- **Tailwind CSS 3**: sistema de estilos con tokens personalizados (color guinda institucional)
-- **React Router v7**: navegación entre páginas
-- **Lucide React**: iconografía
+## Cómo correr
 
-## Arranque local
+Se necesita `.env` con las llaves de Supabase y Auth0 (ver `.env.example`)
 
 ```bash
-cd tablero-app
+cp .env.example .env   # y rellena los valores
+```
+
+Luego, desde `tablero-app/`:
+
+```bash
 npm install
-npm run dev          # servidor en http://localhost:5173
-npm run build        # producción
+npm run dev       # http://localhost:5173
+npm run build     # build de producción (tsc -b + vite build)
+npm run preview   # sirve el build local
+npm test          # vitest
+```
+
+Sin variables de entorno la app arranca pero login y los datos no funcionan.
+
+## Variables de entorno
+
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_AUTH0_DOMAIN=
+VITE_AUTH0_CLIENT_ID=
+VITE_AUTH0_AUDIENCE=
 ```
 
 ## Estructura del proyecto
 
 ```
 src/
-├── types/index.ts          # Interfaces TypeScript para todos los modelos de datos
-├── data/
-│   ├── estados.ts          # 32 entidades federativas con titulares y correos
-│   ├── periodos.ts         # Períodos trimestrales (2025-Q1 → 2026-Q1)
-│   ├── bloques.ts          # Metadatos de los 12 bloques de captura
-│   └── mockReports.ts      # Datos ficticios para las 32 entidades (mapeo backend aquí)
-├── contexts/
-│   └── AppContext.tsx       # Estado global: usuario, formulario, auto-guardado, toasts
+├── types/index.ts        # interfaces de todos los modelos (FormData, BloqueBData, etc.)
+├── data/                 # catálogos: estados, periodos, estructura, bloques
+│   └── mockReports.ts    # ya no se usa en runtime; sirvió para sembrar la BD
+├── services/             # acceso a datos (promesas para Supabase)
+│   ├── reports.ts        # getReports / getReport / saveReport / submitReport
+│   ├── estructura.ts
+│   ├── periodos.ts
+│   └── reference.ts
+├── hooks/                # useReports, useEstructura, usePeriodos, useEstados (+ queryKeys)
 ├── lib/
-│   ├── scoring.ts          # Lógica de puntuación del Bloque K (derivado de J)
-│   └── validation.ts       # Validaciones cruzadas (B vs D, suma capítulos F)
+│   ├── supabase.ts       # cliente; el token de Auth0 se inyecta vía callback accessToken
+│   ├── completeness.ts   # deriva status/progreso de cada bloque desde lo capturado
+│   ├── scoring.ts        # puntaje del Bloque K (sale del J)
+│   ├── validation.ts     # validaciones cruzadas (B vs D, suma de capítulos en F)
+│   └── exportCsv.ts       # exportaciones del lado admin
+├── auth/AuthSync.tsx     # arma el AppUser desde las claims del token de Auth0
+├── contexts/AppContext.tsx  # orquestación: bloque activo, auto-guardado, sesión, toasts
 ├── components/
-│   ├── ui/                 # Sistema de diseño: Button, Badge, Input, Toggle, MoneyInput…
-│   ├── layout/             # AppHeader, FormSidebar
-│   └── blocks/             # Un componente por bloque: BloqueA.tsx … BloqueL.tsx
+│   ├── ui/               # botones, badges, inputs, MoneyInput, etc.
+│   ├── layout/           # AppHeader, FormSidebar
+│   └── blocks/           # un componente por bloque, BloqueA…BloqueL
 └── pages/
     ├── Login.tsx
-    ├── reporter/           # Dashboard, CaptureForm, ReviewSubmit, Confirmation
-    └── admin/              # NationalDashboard, ReportDetail, PeriodManagement
+    ├── reporter/         # Dashboard, CaptureForm, ReviewSubmit, Confirmation
+    └── admin/            # NationalDashboard, ReportDetail, StructureEditor, PeriodManagement
 ```
 
-## Dónde están los datos mock (para el equipo de backend)
+## Roles
 
-| Archivo | Descripción |
-|---|---|
-| `src/data/estados.ts` | Catálogo de 32 entidades con id, nombre, titular y correo |
-| `src/data/periodos.ts` | Períodos trimestrales con fechas de apertura/cierre |
-| `src/data/mockReports.ts` | `MOCK_REPORTS: MockReport[]`, un objeto por entidad con status, progreso, bloqueStatuses y formData |
-| `src/types/index.ts` | Interfaces completas: `FormData`, `BloqueBData`, `BloqueFData`, etc. |
+Se resuelven desde la identidad
 
-La función `buildFullFormData()` en `mockReports.ts` muestra un ejemplo de datos completos realistas para cada bloque. Los campos corresponden exactamente a los tipos en `types/index.ts`.
+- **Reporter** — ve solo su entidad, captura y envía su informe.
+- **Admin** — ve las 32, consulta envíos, edita por sección, administra estructura y periodos.
 
-## Roles de usuario
+El rol y el `estado_id` salen de las claims del token de Auth0 (las pone un Action desde
+`app_metadata`). Esas claims se usan para enrutar y pintar la UI; la **fuente de verdad para RLS
+es la tabla `profiles`** en la base.
 
-La aplicación tiene dos roles, seleccionables en el formulario de login mediante un toggle oculto bajo "Solo en desarrollo":
+## Login (Auth0 + Supabase)
 
-- **Reporter** (`role: 'reporter'`): ve solo su entidad, captura datos, envía reporte final
-- **Admin** (`role: 'admin'`): ve las 32 entidades, consulta envíos, edita reportes por sección y gestiona períodos
+El botón de la pantalla de Login dispara `loginWithRedirect()` de Auth0; no hay registro público,
+las cuentas se aprovisionan a mano (ver `auth0/`). Una vez con sesión, el cliente de Supabase
+adjunta el access token de Auth0 en cada llamada (callback `accessToken` en `lib/supabase.ts`), y
+Postgres aplica RLS por rol/entidad sobre ese `sub`.
 
-## Auto-guardado
+## Auto-guardado y sesión
 
-Simulado con `setInterval` de 10 segundos en `AppContext.tsx`. Actualiza el timestamp `ultimo_guardado` y muestra un toast de confirmación.
+- El auto-guardado es debounced a ~2s después del último cambio (antes era un intervalo fijo).
+  Todas las escrituras pasan por un mismo `persistReport` y se serializan para que un guardado
+  manual y uno automático no se pisen.
+- La sesión cierra por inactividad a los 30 min, con una cuenta regresiva de 1 minuto antes.
 
-## Validaciones cruzadas (funcionan en cliente)
+## Validaciones cruzadas (corren en el cliente)
 
-1. **Bloque B vs D**: el número de integrantes vigentes no puede superar los contemplados en ley. Error inline en Bloque D.
-2. **Bloque F**: la suma de los capítulos 1000–9000 debe coincidir con el presupuesto SESEA 2026. Totalizador en tiempo real con indicador de color.
-3. **Bloque K**: puntaje calculado en tiempo real a partir de las respuestas del Bloque J (25 pts por criterio cumplido). Alto ≥ 75, Medio ≥ 25, Bajo < 25.
+1. **Bloque B vs D** — los integrantes vigentes no pueden pasar de los que contempla la ley.
+   El error sale inline en el Bloque D.
+2. **Bloque F** — la suma de los capítulos 1000–9000 debe cuadrar con el presupuesto SESEA 2026.
+   Hay un totalizador en vivo con semáforo de color.
+3. **Bloque K** — el puntaje se calcula en tiempo real a partir del Bloque J (25 pts por criterio
+   cumplido). Alto ≥ 75, Medio ≥ 25, Bajo < 25.
 
-## Sistema de diseño
+El status/progreso de cada bloque lo deriva `lib/completeness.ts` de lo capturado.
 
-Tokens principales definidos en `tailwind.config.js`:
+## Docker
 
-| Token | Valor | Uso |
+El `Dockerfile` multi-etapa compila el SPA y lo sirve con `serve -s`. Las variables
+`VITE_*` entran como build-args para que no entren en runtime.
+
+```bash
+docker build \
+  --build-arg VITE_SUPABASE_URL=... \
+  --build-arg VITE_SUPABASE_ANON_KEY=... \
+  --build-arg VITE_AUTH0_DOMAIN=... \
+  --build-arg VITE_AUTH0_CLIENT_ID=... \
+  --build-arg VITE_AUTH0_AUDIENCE=... \
+  -t tablero-sea .
+
+docker run -p 3000:3000 tablero-sea    
+```
+
+## Custom tailwind
+
+Custom tokens en `tailwind.config.js`.
+
+| Token | Valor | Para qué |
 |---|---|---|
-| `guinda-950` | `#691C32` | Acento principal, botones primarios, header |
-| `guinda-50` | `#fdf2f4` | Fondos de hover y selección activa |
-| `gray-50` | `#f9fafb` | Fondo general de la aplicación |
-| Verde | `green-*` | Confirmaciones, estado "completo" |
-| Ámbar | `amber-*` | Advertencias, estado "borrador"/"incompleto" |
-| Rojo | `red-*` | Errores de validación |
+| `guinda-950` | `#691C32` | acento principal, botones primarios, header |
+| `guinda-50` | `#fdf2f4` | hover y selección activa |
+| `gray-50` | `#f9fafb` | fondo general |
+| verde | `green-*` | confirmaciones, estado "completo" |
+| ámbar | `amber-*` | advertencias, "borrador" / "incompleto" |
+| rojo | `red-*` | errores de validación |
