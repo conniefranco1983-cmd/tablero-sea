@@ -1,6 +1,7 @@
 import { type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { validarCorreo, validarUrl, validarTelefono, soloDigitos } from '../../lib/validation';
+import { MAX } from '../../lib/fieldLimits';
 
 interface FieldWrapperProps {
   label: string;
@@ -9,9 +10,13 @@ interface FieldWrapperProps {
   hint?: string;
   children: React.ReactNode;
   htmlFor?: string;
+  // Contador de caracteres (p. ej. "123 / 800"); se muestra alineado a la
+  // derecha. `counterOver` lo pinta en rojo cuando se alcanzó el tope.
+  counter?: string;
+  counterOver?: boolean;
 }
 
-export function FieldWrapper({ label, required, error, hint, children, htmlFor }: FieldWrapperProps) {
+export function FieldWrapper({ label, required, error, hint, children, htmlFor, counter, counterOver }: FieldWrapperProps) {
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={htmlFor} className={`field-label ${required ? 'field-required' : ''}`}>
@@ -19,13 +24,22 @@ export function FieldWrapper({ label, required, error, hint, children, htmlFor }
         {!required && <span className="ml-1 text-gray-400 font-normal text-xs">(Opcional)</span>}
       </label>
       {children}
-      {error && (
-        <p className="field-error">
-          <AlertCircle size={12} />
-          {error}
-        </p>
+      {(error || hint || counter) && (
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            {error && (
+              <p className="field-error">
+                <AlertCircle size={12} />
+                {error}
+              </p>
+            )}
+            {hint && !error && <p className="field-hint">{hint}</p>}
+          </div>
+          {counter && (
+            <span className={`field-hint shrink-0 tabular-nums ${counterOver ? 'text-red-600' : ''}`}>{counter}</span>
+          )}
+        </div>
       )}
-      {hint && !error && <p className="field-hint">{hint}</p>}
     </div>
   );
 }
@@ -65,6 +79,7 @@ export function EmailInput({ value, error, ...props }: TextInputProps) {
     <TextInput
       inputMode="email"
       autoComplete="email"
+      maxLength={MAX.correo}
       {...props}
       type="email"
       value={value}
@@ -78,6 +93,7 @@ export function UrlInput({ value, error, placeholder, ...props }: TextInputProps
     <TextInput
       inputMode="url"
       placeholder={placeholder ?? 'https://'}
+      maxLength={MAX.url}
       {...props}
       type="url"
       value={value}
@@ -113,13 +129,26 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   hint?: string;
 }
 
-export function Textarea({ label, required, error, hint, id, className = '', ...props }: TextareaProps) {
+export function Textarea({ label, required, error, hint, id, className = '', value, maxLength, ...props }: TextareaProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s+/g, '-');
+  // Cuando hay tope (`maxLength`) mostramos un contador de caracteres restantes.
+  const len = value == null ? 0 : String(value).length;
+  const counter = typeof maxLength === 'number' ? `${len} / ${maxLength}` : undefined;
   return (
-    <FieldWrapper label={label} required={required} error={error} hint={hint} htmlFor={inputId}>
+    <FieldWrapper
+      label={label}
+      required={required}
+      error={error}
+      hint={hint}
+      htmlFor={inputId}
+      counter={counter}
+      counterOver={typeof maxLength === 'number' && len >= maxLength}
+    >
       <textarea
         id={inputId}
         rows={4}
+        value={value}
+        maxLength={maxLength}
         {...props}
         className={`w-full border rounded-lg px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-1 resize-none ${
           error

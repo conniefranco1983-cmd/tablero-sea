@@ -1,6 +1,7 @@
 import { MoneyInput } from '../ui/MoneyInput';
 import { NumberInput, TextInput } from '../ui/Input';
 import { Toggle } from '../ui/Toggle';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueFData } from '../../types';
 
 interface Props {
@@ -120,6 +121,7 @@ export function BloqueF({ data, onChange, errors = {}, readOnly }: Props) {
             onChange={e => set({ partida_honorarios_cpc: e.target.value })}
             readOnly={readOnly}
             placeholder="Ej. 3000"
+            maxLength={MAX.nombre}
           />
         </div>
       </div>

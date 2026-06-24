@@ -2,6 +2,7 @@ import { Toggle } from '../ui/Toggle';
 import { TextInput, Textarea, NumberInput, UrlInput } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { MoneyInput } from '../ui/MoneyInput';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueJData } from '../../types';
 
 interface Props {
@@ -129,6 +130,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                   onChange={e => set({ pipea_elem_progr_desc: e.target.value })}
                   readOnly={readOnly}
                   required
+                  maxLength={MAX.textoLinea}
                 />
               )}
               <NumberInput
@@ -147,6 +149,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 rows={3}
                 placeholder="Liste las instituciones que participan en la implementación..."
                 required
+                maxLength={MAX.textoLibre}
               />
             </>
           )}
@@ -159,8 +162,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 required
                 rows={4}
-                maxLength={800}
-                hint="Máximo 800 caracteres"
+                maxLength={MAX.descripcion}
               />
               <Toggle
                 label="¿Hay una fecha de aprobación estimada para la aprobación del PI-PEA?"
@@ -213,6 +215,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                   onChange={e => set({ impl_frec_recop: e.target.value })}
                   readOnly={readOnly}
                   placeholder="Ej. Trimestral, Anual..."
+                  maxLength={MAX.textoLinea}
                   required
                 />
               </>
@@ -375,6 +378,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 placeholder="Ej. PEA, PI-PEA, Modelo de Seguimiento y Evaluación..."
                 required
+                maxLength={MAX.textoLinea}
               />
               <TextInput
                 label="Elemento programático que miden los indicadores"
@@ -383,6 +387,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 placeholder="Ej. Eje, Objetivo, Prioridad, Estrategia, Línea de acción..."
                 required
+                maxLength={MAX.textoLinea}
               />
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Indicadores asociados por elemento</p>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -399,6 +404,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 placeholder="Ej. Plataforma digital, Base de datos, Fichas de seguimiento..."
                 required
+                maxLength={MAX.textoLinea}
               />
               <UrlInput
                 label="Liga de la herramienta de seguimiento a los indicadores"
@@ -426,6 +432,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 placeholder="Ej. Trimestral, Anual..."
                 required
+                maxLength={MAX.textoLinea}
               />
               <UrlInput
                 label="Liga de los informes sobre el resultado de los indicadores"
@@ -550,6 +557,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                     rows={3}
                     placeholder="Indique los tres principales hallazgos derivados de la evaluación..."
                     required
+                    maxLength={MAX.evaluacion}
                   />
                 </>
               )}
@@ -565,6 +573,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 required
                 rows={3}
                 placeholder="Describa las estrategias implementadas a partir de la evaluación."
+                maxLength={MAX.evaluacion}
               />
               <Textarea
                 label="Ruta por seguir a partir de los resultados de la evaluación"
@@ -574,6 +583,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 required
                 rows={3}
                 placeholder="Describa la ruta definida a partir de la evaluación."
+                maxLength={MAX.evaluacion}
               />
             </>
           )}

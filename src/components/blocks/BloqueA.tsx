@@ -1,4 +1,5 @@
 import { TextInput } from '../ui/Input';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueAData } from '../../types';
 
 interface Props {
@@ -43,6 +44,7 @@ export function BloqueA({ data, onChange, readOnly = true, showContactNote = tru
           onChange={e => set({ entidad: e.target.value })}
           readOnly={readOnly}
           required
+          maxLength={MAX.nombre}
         />
         <TextInput
           label="Período de reporte"
@@ -56,6 +58,7 @@ export function BloqueA({ data, onChange, readOnly = true, showContactNote = tru
           onChange={e => set({ titular_sesea: e.target.value })}
           readOnly={readOnly || enlaceNombre !== undefined}
           required
+          maxLength={MAX.nombre}
           className="md:col-span-2"
         />
       </div>

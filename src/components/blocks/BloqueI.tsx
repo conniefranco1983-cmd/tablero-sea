@@ -72,7 +72,6 @@ export function BloqueI({ data, onChange, readOnly }: Props) {
                     readOnly={readOnly}
                     rows={3}
                     maxLength={MAX_DESCRIPCION}
-                    hint="Máximo 800 caracteres"
                     placeholder="Describa brevemente qué artículos se modificaron y el alcance del cambio..."
                   />
                 )}

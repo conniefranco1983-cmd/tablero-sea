@@ -15,6 +15,7 @@ import { Loading, LoadError } from '../../components/ui/AsyncStates';
 import { getEstado } from '../../data/estados';
 import { BLOQUES } from '../../data/bloques';
 import { getEstructura } from '../../data/estructura';
+import { MAX } from '../../lib/fieldLimits';
 import { validarSumaCapitulos } from '../../lib/validation';
 import { calcularConsolidacion } from '../../lib/scoring';
 import type { BloqueKey, FormData, NivelConsolidacion } from '../../types';
@@ -298,9 +299,13 @@ export function ReportDetail() {
                   value={comentarios}
                   onChange={e => setComentarios(e.target.value)}
                   rows={3}
+                  maxLength={MAX.textoLibre}
                   placeholder="Sin comentarios"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-guinda-700 focus:ring-1 focus:ring-guinda-700"
                 />
+                <p className={`text-xs text-right tabular-nums ${comentarios.length >= MAX.textoLibre ? 'text-red-600' : 'text-gray-400'}`}>
+                  {comentarios.length} / {MAX.textoLibre}
+                </p>
                 <div className="flex justify-end mt-2">
                   <Button
                     variant="secondary"

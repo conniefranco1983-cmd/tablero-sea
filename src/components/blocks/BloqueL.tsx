@@ -1,4 +1,5 @@
 import { Textarea } from '../ui/Input';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueLData } from '../../types';
 
 interface Props {
@@ -24,7 +25,7 @@ export function BloqueL({ data, onChange, readOnly }: Props) {
           readOnly={readOnly}
           rows={6}
           placeholder="Describa aquí experiencias, avances o buenas prácticas relevantes del período. Por ejemplo: intercambios con otros sistemas estatales, implementaciones exitosas, lecciones aprendidas..."
-          hint="Máximo 2,000 caracteres"
+          maxLength={MAX.textoLibre}
         />
       </div>
 
@@ -37,6 +38,7 @@ export function BloqueL({ data, onChange, readOnly }: Props) {
           rows={4}
           placeholder="Cualquier observación que desee comunicar a la Secretaría Ejecutiva del Sistema Nacional Anticorrupción sobre el período de reporte..."
           hint="Esta sección no es pública y es de uso interno de la Secretaría Ejecutiva del Sistema Nacional Anticorrupción."
+          maxLength={MAX.textoLibre}
         />
       </div>
     </div>

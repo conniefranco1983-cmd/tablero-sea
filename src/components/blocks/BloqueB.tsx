@@ -1,5 +1,6 @@
 import { ORGANOS, type EstructuraEstado } from '../../data/estructura';
 import { TextInput, EmailInput, PhoneInput } from '../ui/Input';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueBData, DesignacionSeat, OrganoKey } from '../../types';
 
 interface Props {
@@ -172,6 +173,7 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                       <TextInput
                         label="Nombre"
                         required
+                        maxLength={MAX.nombre}
                         value={seat.nombre}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { nombre: e.target.value })}
@@ -179,6 +181,7 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                       <TextInput
                         label="Apellido paterno"
                         required
+                        maxLength={MAX.nombre}
                         value={seat.apellido_paterno}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { apellido_paterno: e.target.value })}
@@ -186,6 +189,7 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                       <TextInput
                         label="Apellido materno"
                         required
+                        maxLength={MAX.nombre}
                         value={seat.apellido_materno}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { apellido_materno: e.target.value })}
@@ -193,6 +197,7 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                       <TextInput
                         label="Cargo"
                         required
+                        maxLength={MAX.nombre}
                         value={seat.cargo}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { cargo: e.target.value })}
@@ -200,6 +205,7 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                       <TextInput
                         label="Institución"
                         required
+                        maxLength={MAX.nombre}
                         value={seat.institucion}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { institucion: e.target.value })}

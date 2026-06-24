@@ -1,5 +1,6 @@
 import { Toggle } from '../ui/Toggle';
 import { NumberInput, Textarea } from '../ui/Input';
+import { MAX } from '../../lib/fieldLimits';
 import type { BloqueHData } from '../../types';
 
 interface Props {
@@ -63,6 +64,7 @@ export function BloqueH({ data, onChange, readOnly }: Props) {
               readOnly={readOnly}
               rows={3}
               placeholder="Liste los temas que cubren los cursos disponibles..."
+              maxLength={MAX.textoLibre}
             />
           </div>
         </>
