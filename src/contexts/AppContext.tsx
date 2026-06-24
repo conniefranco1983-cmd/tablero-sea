@@ -160,7 +160,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             addToast({ type: 'error', message: 'El reporte fue modificado en otra sesión. Recargue la página para no perder cambios.' });
           }
         } else {
-          addToast({ type: 'error', message: 'No se pudo guardar el reporte.' });
+          addToast({ type: 'error', message: opts?.submit
+            ? 'No se pudo enviar el reporte. Verifique su conexión e intente de nuevo.'
+            : 'No se pudo guardar el reporte. Verifique su conexión e intente de nuevo.' });
         }
         return false;
       }
@@ -181,6 +183,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (ok) {
           setAutoSaveLabel('Guardado automáticamente');
           setTimeout(() => setAutoSaveLabel(''), 3000);
+        } else {
+          // El guardado falló (p. ej. red caída): volver a marcar como sucio para
+          // que la red de seguridad reintente y no se pierda el último cambio.
+          isDirtyRef.current = true;
         }
       });
     }
