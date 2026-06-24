@@ -1,5 +1,5 @@
 import { ORGANOS, type EstructuraEstado } from '../../data/estructura';
-import { TextInput } from '../ui/Input';
+import { TextInput, EmailInput, PhoneInput } from '../ui/Input';
 import type { BloqueBData, DesignacionSeat, OrganoKey } from '../../types';
 
 interface Props {
@@ -204,17 +204,16 @@ export function BloqueB({ data, estructura, onChange, readOnly }: Props) {
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { institucion: e.target.value })}
                       />
-                      <TextInput
+                      <PhoneInput
                         label="Teléfono"
-                        type="number"
+                        hint="10 dígitos"
                         value={seat.telefono}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { telefono: e.target.value })}
                       />
-                      <TextInput
+                      <EmailInput
                         label="Correo electrónico"
                         required
-                        type="email"
                         value={seat.correo}
                         readOnly={readOnly}
                         onChange={e => setSeat(org.key, i, { correo: e.target.value })}

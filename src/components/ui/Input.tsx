@@ -1,5 +1,6 @@
 import { type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { AlertCircle } from 'lucide-react';
+import { validarCorreo, validarUrl, validarTelefono, soloDigitos } from '../../lib/validation';
 
 interface FieldWrapperProps {
   label: string;
@@ -50,6 +51,58 @@ export function TextInput({ label, required, error, hint, id, className = '', ..
         } ${props.readOnly ? 'bg-gray-50 text-gray-500' : 'bg-white'} ${props.disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : ''} ${className}`}
       />
     </FieldWrapper>
+  );
+}
+
+// Campos con formato. Aplican validación adicional en JS (además de la nativa de
+// HTML5) y muestran el error en el `FieldWrapper`. Si el consumidor pasa un
+// `error` propio, ese tiene prioridad sobre la validación de formato.
+
+const asString = (v: TextInputProps['value']): string => (typeof v === 'string' ? v : v == null ? '' : String(v));
+
+export function EmailInput({ value, error, ...props }: TextInputProps) {
+  return (
+    <TextInput
+      inputMode="email"
+      autoComplete="email"
+      {...props}
+      type="email"
+      value={value}
+      error={error ?? validarCorreo(asString(value))}
+    />
+  );
+}
+
+export function UrlInput({ value, error, placeholder, ...props }: TextInputProps) {
+  return (
+    <TextInput
+      inputMode="url"
+      placeholder={placeholder ?? 'https://'}
+      {...props}
+      type="url"
+      value={value}
+      error={error ?? validarUrl(asString(value))}
+    />
+  );
+}
+
+export function PhoneInput({ value, error, onChange, ...props }: TextInputProps) {
+  return (
+    <TextInput
+      inputMode="numeric"
+      autoComplete="tel"
+      maxLength={10}
+      {...props}
+      type="tel"
+      value={value}
+      error={error ?? validarTelefono(asString(value))}
+      onChange={e => {
+        // Restringe la captura a dígitos antes de propagar el cambio.
+        const sanitized = soloDigitos(e.target.value);
+        if (sanitized !== e.target.value) e.target.value = sanitized;
+        onChange?.(e);
+      }}
+    />
   );
 }
 

@@ -1,5 +1,5 @@
 import { Toggle } from '../ui/Toggle';
-import { TextInput, Textarea, NumberInput } from '../ui/Input';
+import { TextInput, Textarea, NumberInput, UrlInput } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { MoneyInput } from '../ui/MoneyInput';
 import type { BloqueJData } from '../../types';
@@ -191,8 +191,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
             />
             {data.impl_mec_seg === true && (
               <>
-                <TextInput
-                  type="url"
+                <UrlInput
                   label="Liga de la herramienta de seguimiento a la implementación"
                   value={data.impl_link_mec_seg}
                   onChange={e => set({ impl_link_mec_seg: e.target.value })}
@@ -222,8 +221,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
             />
             {data.impl_informes_seg === true && (
               <>
-                <TextInput
-                  type="url"
+                <UrlInput
                   label="Liga de los informes de seguimiento a la implementación"
                   value={data.impl_link_informes_seg}
                   onChange={e => set({ impl_link_informes_seg: e.target.value })}
@@ -281,8 +279,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 required
               />
               {data.presup_publ === true && (
-                <TextInput
-                  type="url"
+                <UrlInput
                   label="Liga de la publicación del instrumento presupuestario y el monto"
                   value={data.presup_link_publ}
                   onChange={e => set({ presup_link_publ: e.target.value })}
@@ -299,8 +296,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 disabled={readOnly}
               />
               {data.presup_metod === true && (
-                <TextInput
-                  type="url"
+                <UrlInput
                   label="Liga de la metodología para etiquetar el recurso"
                   value={data.presup_metod_link}
                   onChange={e => set({ presup_metod_link: e.target.value })}
@@ -386,7 +382,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Indicadores asociados por elemento</p>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <NumberInput label="Ejes" value={data.indic_ejes} onChange={v => set({ indic_ejes: v })} disabled={readOnly} min={0} required />
-                <NumberInput label="Objetivos específicos" value={data.indic_obj_esp} onChange={v => set({ indic_obj_esp: v })} disabled={readOnly} min={0} required />
+                <NumberInput label="Obj. específicos" value={data.indic_obj_esp} onChange={v => set({ indic_obj_esp: v })} disabled={readOnly} min={0} required />
                 <NumberInput label="Prioridades" value={data.indic_prior} onChange={v => set({ indic_prior: v })} disabled={readOnly} min={0} required />
                 <NumberInput label="Estrategias" value={data.indic_estr} onChange={v => set({ indic_estr: v })} disabled={readOnly} min={0} required />
                 <NumberInput label="Líneas de acción" value={data.indic_lin_acc} onChange={v => set({ indic_lin_acc: v })} disabled={readOnly} min={0} required />
@@ -399,8 +395,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 placeholder="Ej. Plataforma digital, Base de datos, Fichas de seguimiento..."
                 required
               />
-              <TextInput
-                type="url"
+              <UrlInput
                 label="Liga de la herramienta de seguimiento a los indicadores"
                 value={data.indic_link_herr}
                 onChange={e => set({ indic_link_herr: e.target.value })}
@@ -427,8 +422,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 placeholder="Ej. Trimestral, Anual..."
                 required
               />
-              <TextInput
-                type="url"
+              <UrlInput
                 label="Liga de los informes sobre el resultado de los indicadores"
                 value={data.indic_link_informes}
                 onChange={e => set({ indic_link_informes: e.target.value })}
@@ -480,8 +474,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 readOnly={readOnly}
                 required
               />
-              <TextInput
-                type="url"
+              <UrlInput
                 label="Liga de la metodología de seguimiento y evaluación"
                 value={data.se_metod_link}
                 onChange={e => set({ se_metod_link: e.target.value })}
@@ -528,8 +521,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
               />
               {data.eval_informes === true && (
                 <>
-                  <TextInput
-                    type="url"
+                  <UrlInput
                     label="Liga del informe de la evaluación"
                     value={data.eval_link_infor}
                     onChange={e => set({ eval_link_infor: e.target.value })}
@@ -537,8 +529,7 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                     placeholder="https://"
                     required
                   />
-                  <TextInput
-                    type="url"
+                  <UrlInput
                     label="Liga de la metodología utilizada para la evaluación"
                     value={data.eval_metod}
                     onChange={e => set({ eval_metod: e.target.value })}
