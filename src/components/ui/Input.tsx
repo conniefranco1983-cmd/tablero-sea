@@ -140,18 +140,25 @@ interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, '
   onChange: (v: number | '') => void;
 }
 
-export function NumberInput({ label, required, error, hint, value, onChange, id, className = '', ...props }: NumberInputProps) {
+export function NumberInput({ label, required, error, hint, value, onChange, id, className = '', min = 0, ...props }: NumberInputProps) {
   const inputId = id ?? label.toLowerCase().replace(/\s+/g, '-');
+  // El piso (`min`, 0 por defecto) se aplica también en JS: el atributo `min` de
+  // HTML5 no impide teclear valores negativos, solo la validación nativa (que
+  // aquí nunca corre porque no hay <form> con submit). Acotamos en el onChange.
+  const floor = typeof min === 'number' ? min : Number(min);
   return (
     <FieldWrapper label={label} required={required} error={error} hint={hint} htmlFor={inputId}>
       <input
         id={inputId}
         type="number"
-        min={0}
+        min={min}
         value={value === '' ? '' : value}
         onChange={e => {
-          const v = e.target.value;
-          onChange(v === '' ? '' : Number(v));
+          const raw = e.target.value;
+          if (raw === '') { onChange(''); return; }
+          const n = Number(raw);
+          if (Number.isNaN(n)) return;
+          onChange(!Number.isNaN(floor) && n < floor ? floor : n);
         }}
         {...props}
         className={`w-full border rounded-lg px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-1 ${

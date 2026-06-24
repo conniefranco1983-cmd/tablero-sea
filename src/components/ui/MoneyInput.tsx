@@ -48,8 +48,12 @@ export function MoneyInput({ label, value, onChange, required, error, hint, disa
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={e => {
-            const v = e.target.value;
-            onChange(v === '' ? '' : Number(v));
+            const raw = e.target.value;
+            if (raw === '') { onChange(''); return; }
+            const n = Number(raw);
+            if (Number.isNaN(n)) return;
+            // El atributo min={0} no impide teclear negativos; lo acotamos aquí.
+            onChange(n < 0 ? 0 : n);
           }}
           className="flex-1 px-3 py-2 text-sm bg-transparent focus:outline-none disabled:cursor-not-allowed"
         />
