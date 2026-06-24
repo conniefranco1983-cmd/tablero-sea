@@ -15,6 +15,14 @@ const PIPEA_EJEC_OPTIONS = [
   { value: 'no_iniciado',  label: 'No iniciado' },
 ];
 
+// Escala de valoración 1–4 (restringe la captura a esos valores).
+const ESCALA_1_4_OPTIONS = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+];
+
 function SectionHeader({ num, title }: { num: number; title: string }) {
   return (
     <div className="flex items-center gap-3 mb-4">
@@ -332,34 +340,31 @@ export function BloqueJ({ data, onChange, readOnly }: Props) {
                 min={0}
               />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <NumberInput
+                <Select
                   label="¿En qué medida miden el problema de la corrupción?"
-                  value={data.indic_problem_corr}
-                  onChange={v => set({ indic_problem_corr: v })}
+                  value={data.indic_problem_corr === '' ? '' : String(data.indic_problem_corr)}
+                  onChange={e => set({ indic_problem_corr: e.target.value === '' ? '' : Number(e.target.value) })}
                   disabled={readOnly}
-                  min={1}
-                  max={4}
-                  hint="Escala 1–4"
+                  options={ESCALA_1_4_OPTIONS}
+                  placeholder="Selecciona…"
                   required
                 />
-                <NumberInput
+                <Select
                   label="¿En qué medida reflejan los objetivos anticorrupción?"
-                  value={data.indic_obj_anti}
-                  onChange={v => set({ indic_obj_anti: v })}
+                  value={data.indic_obj_anti === '' ? '' : String(data.indic_obj_anti)}
+                  onChange={e => set({ indic_obj_anti: e.target.value === '' ? '' : Number(e.target.value) })}
                   disabled={readOnly}
-                  min={1}
-                  max={4}
-                  hint="Escala 1–4"
+                  options={ESCALA_1_4_OPTIONS}
+                  placeholder="Selecciona…"
                   required
                 />
-                <NumberInput
+                <Select
                   label="¿En qué medida miden una actividad institucional?"
-                  value={data.indic_act_inst}
-                  onChange={v => set({ indic_act_inst: v })}
+                  value={data.indic_act_inst === '' ? '' : String(data.indic_act_inst)}
+                  onChange={e => set({ indic_act_inst: e.target.value === '' ? '' : Number(e.target.value) })}
                   disabled={readOnly}
-                  min={1}
-                  max={4}
-                  hint="Escala 1–4"
+                  options={ESCALA_1_4_OPTIONS}
+                  placeholder="Selecciona…"
                   required
                 />
               </div>
